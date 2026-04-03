@@ -129,8 +129,8 @@ MSG_WARN_PASSWORD_CONFIRM: str = 'The entered values did not match. Try again'
 'Do you want to continue with installation?'
 CONST_MIN_DISK_SIZE: int = 2147483648  # 2 GB
 CONST_MIN_ROOT_SIZE: int = 1610612736  # 1.5 GB
-# a reserved space: 2MB for header, 1 MB for BIOS partition, 256 MB for EFI
-CONST_RESERVED_SPACE: int = (2 + 1 + 256) * 1024**2
+# a reserved space: 32MB for header, 1 MB for BIOS partition, 256 MB for EFI
+CONST_RESERVED_SPACE: int = (32 + 1 + 256) * 1024**2
 
 # define directories and paths
 DIR_CONFIG: str = directories['config']
@@ -243,6 +243,7 @@ def create_partitions(target_disk: str, target_size: int,
         rootfs_size: int = ask_root_size(available_size)
     else:
         rootfs_size: int = available_size
+    rootfs_size -= 32768
 
     print(MSG_INFO_INSTALL_PARTITONING)
     raid.clear()

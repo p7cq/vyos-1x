@@ -40,10 +40,11 @@ def disk_cleanup(drive_path: str) -> None:
         drive_path (str): path to a drive that needs to be cleaned
     """
     partitions: list[str] = partition_list(drive_path)
-    for partition in partitions:
-        run(f'wipefs -af {partition}')
-    run(f'wipefs -af {drive_path}')
-    run(f'sgdisk -Z {drive_path}')
+    partition_count :int = len(partitions)
+    while partition_count > 0:
+        run(f'sgdisk -gd {partition_count} {drive_path}')
+        partition_count -= 1
+    run(f'sgdisk -go {drive_path}')
 
 
 def find_persistence() -> str:
@@ -73,7 +74,7 @@ def parttable_create(drive_path: str, root_size: int) -> None:
         root_size_text: str = '+100%'
     else:
         root_size_text: str = str(root_size)
-    command = f'sgdisk -a1 -n1:2048:4095 -t1:EF02 -n2:4096:+256M -t2:EF00 \
+    command = f'sgdisk -a1 -n1:65536:+1M -t1:EF02 -n2:0:+256M -t2:EF00 \
         -n3:0:+{root_size_text}K -t3:8300 {drive_path}'
 
     run(command)
