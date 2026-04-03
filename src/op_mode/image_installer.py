@@ -192,7 +192,7 @@ def find_disks() -> dict[str, int]:
     print('Probing disks')
     disks_available: dict[str, int] = disk.disks_size()
     for disk_name, disk_size in disks_available.copy().items():
-        if disk_size < CONST_MIN_DISK_SIZE:
+        if disk_size < CONST_MIN_DISK_SIZE or not disk_name.endswith('mmcblk0'):
             del disks_available[disk_name]
     if not disks_available:
         print(MSG_ERR_NO_DISK)
@@ -1058,6 +1058,20 @@ def install_image() -> None:
         grub.version_add(image_name, DIR_DST_ROOT)
         grub.set_default(image_name, DIR_DST_ROOT)
         grub.set_console_type(console_dict[console_type], DIR_DST_ROOT)
+
+        postinstall_script: str = 'vyos-postinstall'
+        postinstall = Path(f'/usr/local/bin/{postinstall_script}')
+        if postinstall.exists():
+            print('Configuring Mono Gateway automatic boot')
+            try:
+                rc = run(f'{postinstall} --root {DIR_DST_ROOT} {image_name}')
+                if rc != 0:
+                    print('Boot configuration failed, manual intervention required')
+            except Exception as e:
+                print(f'{postinstall_script} failed: {e}')
+                pass
+        else:
+            print(f'{postinstall_script} failed: file does not exist')
 
         if is_raid_install(install_target):
             # add RAID specific modules
