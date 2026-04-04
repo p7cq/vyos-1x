@@ -59,7 +59,7 @@ from vyos.version import get_version
 from vyos.base import Warning
 from vyos.defaults import directories
 
-CHUNK_SIZE = 8192
+CHUNK_SIZE = 1048576
 
 class InteractivePolicy(MissingHostKeyPolicy):
     """
