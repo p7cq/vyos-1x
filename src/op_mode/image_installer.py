@@ -1322,6 +1322,10 @@ def add_image(image_path: str, vrf: str = None, username: str = '',
         copy(f'{DIR_ISO_MOUNT}/live/filesystem.squashfs',
              f'{root_dir}/boot/{image_name}/{image_name}.squashfs')
 
+        for file in Path(DIR_ISO_MOUNT).iterdir():
+            if file.is_file() and file.suffix == '.dtb':
+                copy(file, f'{root_dir}/boot/{image_name}/')
+
         # unmount an ISO and cleanup
         cleanup([str(iso_path)])
 

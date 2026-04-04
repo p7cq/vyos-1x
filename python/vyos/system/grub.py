@@ -359,6 +359,14 @@ def set_default(version_name: str, root_dir: str = '') -> None:
     vars_current['default'] = gen_version_uuid(version_name)
     vars_write(vars_file, vars_current)
 
+    # Update vyos.env when upgrading
+    try:
+        env_path = Path(f'{root_dir}/boot/vyos.env')
+        env_path.write(f'vyos_image={version_name}')
+    except Exception as e:
+        print(f'Failed to update vyos.env: {e}')
+        pass
+
 
 def common_write(root_dir: str = '', grub_common: dict[str, str] = {}) -> None:
     """Write common GRUB configuration file (overwrite everything)
