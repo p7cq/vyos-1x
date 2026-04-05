@@ -362,7 +362,7 @@ def set_default(version_name: str, root_dir: str = '') -> None:
     # Update vyos.env when upgrading
     try:
         env_path = Path(f'{root_dir}/boot/vyos.env')
-        env_path.write(f'vyos_image={version_name}')
+        env_path.write_text(f'vyos_image={version_name}')
     except Exception as e:
         print(f'Failed to update vyos.env: {e}')
         pass
